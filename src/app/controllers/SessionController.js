@@ -1,5 +1,7 @@
 import * as Yup from 'yup'
 import User from '../models/Users.js'
+import jwt from 'jsonwebtoken'
+import authConfig from '../../config/auth.js'
 
 class SessionController {
     async store(request, response){
@@ -36,7 +38,14 @@ class SessionController {
         return emailOrPasswordIncorrect()
       }
 
-      return response.status(201).json({ id: user.id, name: user.name, email, admin: user.admin})
+      return response.status(201).json({ id: user.id, 
+        name: user.name, 
+        email, 
+        admin: user.admin,
+        token: jwt.sign({ id: user.id, name: user.name }, authConfig.secret, {
+          expiresIn: authConfig.expiresIn
+        })
+      })
     }
 }
 
